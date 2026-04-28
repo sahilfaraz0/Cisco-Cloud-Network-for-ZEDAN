@@ -1,0 +1,30 @@
+hostname WH-RTR
+
+interface GigabitEthernet0/0
+ ip address 192.168.100.1 255.255.255.0
+ no shutdown
+
+interface GigabitEthernet0/1
+ no ip address
+ shutdown
+
+interface GigabitEthernet0/2
+ no ip address
+ shutdown
+
+interface Serial0/0/0
+ no ip address
+ encapsulation frame-relay
+ no shutdown
+
+interface Serial0/0/0.1 point-to-point
+ ip address 10.0.0.1 255.255.255.252
+ frame-relay interface-dlci 201
+
+interface Serial0/0/0.2 point-to-point
+ ip address 10.0.0.5 255.255.255.252
+ frame-relay interface-dlci 202
+
+ip route 192.168.10.0 255.255.255.0 10.0.0.2
+ip route 192.168.20.0 255.255.255.0 10.0.0.6
+ip route 192.168.50.0 255.255.255.0 10.0.0.6

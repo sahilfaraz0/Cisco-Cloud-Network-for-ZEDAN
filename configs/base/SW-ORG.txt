@@ -1,0 +1,25 @@
+hostname SW-ORG
+
+! Layer 2 access switch — no SVIs, no routing
+! All ports in default VLAN 1
+
+interface FastEthernet0/1
+ ! ORG-PC 1
+
+interface FastEthernet0/2
+ ! ORG-PC 2
+
+interface FastEthernet0/4
+ ! ORG-PC 3
+
+interface FastEthernet0/5
+ ! ORG-PC 4
+
+interface FastEthernet0/6
+ ! ORG-PC 5
+
+interface FastEthernet0/7
+ ! ORG-PC 6
+
+interface FastEthernet0/24
+ ! Uplink to ASA-ORG Ethernet0/0
