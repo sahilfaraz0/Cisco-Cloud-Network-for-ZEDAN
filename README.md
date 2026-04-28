@@ -139,5 +139,89 @@ All serial interfaces use `encapsulation frame-relay` with explicit `frame-relay
 
 All inter-zone routing uses **static routes**. No dynamic routing protocol is configured, keeping the design deterministic and easy to audit.
 
-### WH-RTR
 
+---
+
+## Security — ASA Firewalls
+
+### ASA-ORG (FW-ORG) — Both builds
+
+- **Inside:** 192.168.10.1/24 — security-level 100
+- **Outside:** 192.168.20.1/24 — security-level 0
+- **ACL:** `OUTSIDE-IN` permits all inbound IP (permissive for simulation)
+- **DHCP:** Assigns 192.168.10.10–10.31 to inside clients
+
+
+### WH-ASA — Optimized build only
+
+- **Inside:** 192.168.100.2/24 — security-level 100
+- **Outside:** 192.168.200.2/252 — security-level 0
+- **NAT:** Dynamic interface NAT for the warehouse subnet
+
+
+### STO-ASA (CLT-ASA) — Optimized build only
+
+- **Inside:** 192.168.50.2/24 — security-level 100
+- **Outside:** 192.0.2.2/30 — security-level 0
+- **NAT:** Dynamic interface NAT for the state office subnet
+
+
+---
+
+## Base vs Optimized
+
+| Feature | Base | Optimized |
+|---------|------|-----------|
+| Zones | 3 | 3 |
+| Firewalls | 1 (ASA-ORG only) | 3 (all zones) |
+| NAT | ✗ | ✓ (WH-ASA + STO-ASA) |
+| PPP WAN link | ✗ | ✓ (Serial0/0/1) |
+| Default route on WH-RTR | ✗ | ✓ (via WH-ASA) |
+| Redundant switch mesh (Org) | ✗ | ✓ (Switch0→2/3→4) |
+| IoT server | ✗ | ✓ (State Office) |
+| DHCP pools on STO-RTR | 1 | 2 (CLIENTS + CLT-POOL) |
+| Total endpoints | ~18 | ~35 |
+| Packet Tracer file | `base/` | `optimized/` |
+
+---
+
+## Performance Testing
+
+All tests conducted between Organizational zone PCs and Warehouse servers (192.168.100.x).
+
+| Metric | Base | Optimized | Change |
+|--------|------|-----------|--------|
+| Latency (avg) | 8.5 ms | 1.5 ms | ↓ 82% |
+| Round-Trip Time | 23 ms | 2 ms | ↓ 91% |
+| Packet Loss | 30% | 0% | ↓ 100% |
+| Jitter | 11.14 ms | 1.3 ms | ↓ 88% |
+| Throughput (FTP) | 0.82 Mbps | ~2 Mbps | ↑ 144% |
+| Bandwidth Utilization | 80% | 90% | ↑ 10% |
+
+> Tests used Packet Tracer's built-in ping (ICMP), extended ping from router CLI, and FTP file transfer timing. See [`images/`](./images/) for screenshots.
+
+---
+
+## Repository Structure
+
+---
+
+## How to Use
+
+1. Install **Cisco Packet Tracer 8.x** or later (free via [Cisco Networking Academy](https://www.netacad.com))
+2. Open either `.pkt` file from the repo root
+3. Click any device → **CLI** tab to inspect running configurations
+4. To test connectivity — open a PC → **Desktop** → **Command Prompt** → `ping 192.168.100.10`
+5. To test FTP — open a PC → **Desktop** → **Command Prompt** → `ftp 192.168.100.20`
+6. Device configs are also available as plain text in [`configs/`](./configs/) for reference without Packet Tracer
+
+---
+
+## Tools
+
+| Tool | Purpose |
+|------|---------|
+| Cisco Packet Tracer 8.x | Network simulation |
+| Microsoft Visio | Network layer diagrams |
+| Lucidchart | Cloud architecture diagrams |
+| GitHub | Version control and portfolio hosting |
